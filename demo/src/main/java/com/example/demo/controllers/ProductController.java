@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.GetProductsDto;
 import com.example.demo.models.Product;
 import com.example.demo.services.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<GetProductsDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
