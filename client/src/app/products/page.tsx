@@ -37,7 +37,7 @@ export default function ProductsPage() {
         const data = await getAllProductsAsync();
         console.log("data: ", data);
         setProducts(data);
-        setFilteredProducts(products);
+        setFilteredProducts(data);
       } catch (err) {
         console.error(err);
       }
@@ -51,8 +51,9 @@ export default function ProductsPage() {
     categoryId: number,
     categoryName: string
   ) => {
-    if ((categoryName = "All")) {
+    if (categoryName === "All") {
       setFilteredProducts(products);
+      return;
     }
 
     const filtered = products.filter(

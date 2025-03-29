@@ -2,16 +2,26 @@
 
 import { Button, FormControl, TextField } from "@mui/material";
 import { useState } from "react";
+import { useAuth } from "../context/authContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Logging in");
     console.log("Email:", email);
     console.log("Password:", password);
+
+    const res = login(email, password);
+
+    router.push("/home");
+    console.log("res: ", res);
   };
 
   return (
