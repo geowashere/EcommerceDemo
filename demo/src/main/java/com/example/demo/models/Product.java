@@ -20,6 +20,9 @@ public class Product {
     @Column(name="description", nullable = false)
     private String description;
 
+    @Column(unique = true)
+    private Integer position;
+
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @JsonBackReference
@@ -63,6 +66,14 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }
 

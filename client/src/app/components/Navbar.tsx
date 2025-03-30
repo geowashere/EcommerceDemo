@@ -25,7 +25,7 @@ export default function Navbar() {
         </li>
         {role === "ADMIN" && (
           <li>
-            <Link href="/admin-panel" className="hover:underline">
+            <Link href="/admin" className="hover:underline">
               Admin
             </Link>
           </li>

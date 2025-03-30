@@ -18,9 +18,30 @@ public class Category {
     @Column(name = "description", nullable = false)
     private String description;
 
+
+    @Column(unique = true)
+    private Integer position;
+
     @OneToMany(mappedBy = "category")
     @JsonManagedReference
     private List<Product> products;
+
+    public Category() {
+    }
+
+    public Category(String name, String description, Integer position) {
+        this.name = name;
+        this.description = description;
+        this.position = position;
+    }
+
+    public Category(Long id, String name, String description, Integer position, List<Product> products) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.position = position;
+        this.products = products;
+    }
 
     public Long getId() {
         return id;
@@ -52,5 +73,13 @@ public class Category {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

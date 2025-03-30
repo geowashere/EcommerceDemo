@@ -1,17 +1,13 @@
+import {
+  CreateProductType,
+  ProductType,
+  UpdateProductType,
+} from "../utils/types";
 import { axiosInstance } from "./axiosConfig";
 
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  categoryId: number;
-  categoryName: string;
-}
-
 export const createProductAsync = async (
-  productData: Product
-): Promise<Product> => {
+  productData: CreateProductType
+): Promise<CreateProductType> => {
   try {
     const response = await axiosInstance.post("products", productData);
     return response.data;
@@ -21,7 +17,7 @@ export const createProductAsync = async (
   }
 };
 
-export const getAllProductsAsync = async (): Promise<Product[]> => {
+export const getAllProductsAsync = async (): Promise<ProductType[]> => {
   try {
     const response = await axiosInstance.get("products");
     return response.data;
@@ -31,7 +27,7 @@ export const getAllProductsAsync = async (): Promise<Product[]> => {
   }
 };
 
-export const getProductByIdAsync = async (id: number): Promise<Product> => {
+export const getProductByIdAsync = async (id: number): Promise<ProductType> => {
   try {
     const response = await axiosInstance.get(`products/${id}`);
     return response.data;
@@ -42,11 +38,13 @@ export const getProductByIdAsync = async (id: number): Promise<Product> => {
 };
 
 export const updateProductAsync = async (
-  id: number,
-  productData: Product
-): Promise<Product> => {
+  productData: UpdateProductType
+): Promise<UpdateProductType> => {
   try {
-    const response = await axiosInstance.put(`products/${id}`, productData);
+    const response = await axiosInstance.put(
+      `products/${productData.id}`,
+      productData
+    );
     return response.data;
   } catch (error) {
     console.error("Error updating product", error);
@@ -59,6 +57,18 @@ export const deleteProductAsync = async (id: number): Promise<void> => {
     await axiosInstance.delete(`products/${id}`);
   } catch (error) {
     console.error("Error deleting product", error);
+    throw error;
+  }
+};
+
+export const updateProductOrderAsync = async (
+  productOrder: Array<{ id: number; position: number }>
+) => {
+  try {
+    const response = await axiosInstance.put("/products/reorder", productOrder);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating category order:", error);
     throw error;
   }
 };

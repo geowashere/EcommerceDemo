@@ -5,15 +5,19 @@ public class GetProductsDto {
     private String name;
     private Double price;
     private String description;
+    private Integer position;
     private Long categoryId;
     private String categoryName;
 
     // Constructor, Getters, and Setters
-    public GetProductsDto(Long id, String name, Double price, String description, Long categoryId, String categoryName) {
+
+
+    public GetProductsDto(Long id, String name, Double price, String description, Integer position, Long categoryId, String categoryName) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
+        this.position = position;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
@@ -64,5 +68,13 @@ public class GetProductsDto {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }
