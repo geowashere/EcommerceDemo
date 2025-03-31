@@ -38,7 +38,7 @@ Before running the application, make sure you have the following installed:
 1. Clone the repository
 
 ```
-git clone https://github.com/geowashere/DishDiscovery.git
+git clone https://github.com/geowashere/EcommerceDemo.git
 ```
 
 2. Go to the project directory and install dependencies for both the client and the server:
