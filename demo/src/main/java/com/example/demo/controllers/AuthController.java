@@ -6,6 +6,7 @@ import com.example.demo.dto.RegisterDto;
 import com.example.demo.dto.RegisterResponseDto;
 import com.example.demo.services.AuthService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,12 +22,14 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public RegisterResponseDto register(@RequestBody RegisterDto registerDto) {
-        return authService.register(registerDto);
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterDto registerDto) {
+        RegisterResponseDto response = authService.register(registerDto);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public AuthResponseDto login(@RequestBody LoginDto loginDto) {
-        return authService.login(loginDto);
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
+        AuthResponseDto response = authService.login(loginDto);
+        return ResponseEntity.ok(response);
     }
 }

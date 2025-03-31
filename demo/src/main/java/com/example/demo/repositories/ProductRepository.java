@@ -14,7 +14,8 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByOrderByPositionAsc();
-
+    @Query("SELECT COUNT(p) > 0 FROM Product p WHERE p.category.id = :categoryId")
+    boolean existsByCategoryId(Long categoryId);
     @Query("SELECT COALESCE(MAX(p.position),0) FROM Product p")
     Integer findMaxPosition();
     @Modifying

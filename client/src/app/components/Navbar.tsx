@@ -1,30 +1,48 @@
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import { IconButton } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import Link from "next/link";
 import { useAuth } from "../context/authContext";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const { role, token, firstName, lastName } = useAuth();
+  const { role, token, firstName, lastName, logout } = useAuth();
 
   console.log("ROle: ", role);
-
+  const router = useRouter();
   return (
     <div className=" flex justify-around py-5 px- 15 bg-[#171717] text-white">
-      <div>Logo</div>
+      <div className="hidden md:block">Logo</div>
 
-      <ul className="flex  gap-2">
+      <ul className="flex  gap-2 items-start">
         <li>
-          <Link href="/products" className="hover:underline">
+          <Link href={"/cart"}>
+            <IconButton sx={{ color: "white", marginTop: -0.9 }}>
+              <AddShoppingCartIcon />
+            </IconButton>
+          </Link>
+        </li>
+        <li>
+          <Link href="/products" className="hover:underline hidden sm:block">
             Products
           </Link>
         </li>
-        {token && (
+        {token ? (
+          <li
+            onClick={async () => {
+              await logout();
+              router.push("/login");
+            }}
+            className="cursor-pointer hover:underline"
+          >
+            <Typography sx={{ fontSize: 14, marginTop: 0.4 }}>
+              Logout{" "}
+            </Typography>
+          </li>
+        ) : (
           <li>
-            <Link href={"/cart"}>
-              <IconButton sx={{ color: "white", marginTop: -0.9 }}>
-                <AddShoppingCartIcon />
-              </IconButton>
+            <Link href={"/login"}>
+              <Typography>Login </Typography>
             </Link>
           </li>
         )}

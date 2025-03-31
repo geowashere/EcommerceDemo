@@ -21,9 +21,6 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Cart cart;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     public Long getId() {
         return id;
     }
@@ -79,21 +76,4 @@ public class User {
     public void setCart(Cart cart) {
         this.cart = cart;
     }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
-

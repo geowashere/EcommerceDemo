@@ -31,8 +31,6 @@ public class AdminInitializer implements CommandLineRunner {
             adminUser.setFirstName("Admin");
             adminUser.setLastName("User");
             adminUser.setRole(Role.ADMIN);
-            adminUser.setCreatedAt(LocalDateTime.now());
-            adminUser.setUpdatedAt(LocalDateTime.now());
 
             userRepository.save(adminUser);
             System.out.println("Admin user created successfully!");

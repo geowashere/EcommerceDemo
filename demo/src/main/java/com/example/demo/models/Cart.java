@@ -18,9 +18,6 @@ public class Cart {
     @OneToMany(mappedBy = "cart")
     private List<CartItem> items;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     public Long getId() {
         return id;
     }
@@ -45,19 +42,4 @@ public class Cart {
         this.items = items;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

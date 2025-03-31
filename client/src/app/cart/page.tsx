@@ -23,7 +23,11 @@ const CartPage = () => {
   const { cartId } = useAuth();
 
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-  const subtotal = 0;
+  const subtotal = cartItems.reduce(
+    (total, cartItem) =>
+      total + cartItem.productPrice * (cartItem.quantity || 1),
+    0
+  );
   const totalItems = cartItems.length;
 
   useEffect(() => {
@@ -105,7 +109,6 @@ const CartPage = () => {
                       key={item.id}
                       item={item}
                       onQuantityChange={(id, newQuantity) => {
-                        // Implement your quantity update logic here
                         setCartItems((prev) =>
                           prev.map((item) =>
                             item.id === id

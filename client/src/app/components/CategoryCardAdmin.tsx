@@ -100,7 +100,7 @@ const CategoryCardAdmin: React.FC<CategoryCardProps> = ({
     <div
       ref={cardRef}
       className="cursor-move"
-      style={{ opacity: isDragging ? 0.6 : 1 }}
+      style={{ touchAction: "none", opacity: isDragging ? 0.6 : 1 }}
       data-handler-id={handlerId}
     >
       <Card
@@ -117,7 +117,7 @@ const CategoryCardAdmin: React.FC<CategoryCardProps> = ({
             gap: 2,
           }}
         >
-          <div className="flex justify-between items-start gap-12">
+          <div className="flex justify-between items-start gap-12 w-[100%]">
             <Typography variant="h6" className="font-semibold">
               {category.name}
             </Typography>

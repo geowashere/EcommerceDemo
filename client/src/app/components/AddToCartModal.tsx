@@ -43,7 +43,13 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({
 
   if (selectedProduct) {
     return (
-      <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="xs"
+        fullWidth
+        closeAfterTransition={false}
+      >
         <DialogTitle className="bg-gray-50 p-4">
           <p className="font-semibold">Add to Cart</p>
         </DialogTitle>

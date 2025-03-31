@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { loginUser, registerUser } from "../api/authService";
 import { createCartAsync } from "../api/cartService";
+import { LoginResponse } from "../utils/types";
 
 export interface AuthContextType {
   token: string | null;
@@ -18,14 +19,14 @@ export interface AuthContextType {
   role: string | null;
   firstName: string | null;
   lastName: string | null;
-  login: (email: string, password: string) => void;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<LoginResponse>;
+  logout: () => Promise<void>;
   register: (
     firstName: string,
     lastName: string,
     email: string,
     password: string
-  ) => void;
+  ) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -70,7 +71,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setCartId(Number(storedCartId));
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<LoginResponse> => {
     try {
       const response = await loginUser(email, password);
 
@@ -81,7 +85,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem("auth_role", response.role);
       localStorage.setItem("firstName", response.firstName);
       localStorage.setItem("lastName", response.lastName);
-      localStorage.setItem("userId", response.userId);
+      localStorage.setItem("userId", response.userId + "");
 
       //create cart for the user
       const cartResponse = await createCartAsync();
@@ -98,30 +102,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return response;
     } catch (err) {
-      console.error(err);
+      console.error("Login error: ", err);
+      localStorage.removeItem("auth_token");
+      setToken(null);
       throw err;
     }
   };
 
-  const logout = () => {
+  const logout = async (): Promise<void> => {
     console.log("logging out");
     setToken(null);
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_role");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("cartId");
   };
 
-  const register = (
+  const register = async (
     firstName: string,
     lastName: string,
     email: string,
     password: string
-  ) => {
-    registerUser(firstName, lastName, email, password)
-      .then((response) => {
-        console.log("Registration successful:", response.data);
-      })
-      .catch((err) => {
-        console.error("Registration failed:", err);
-      });
+  ): Promise<void> => {
+    const res = await registerUser(firstName, lastName, email, password);
+    return res;
   };
 
   return (

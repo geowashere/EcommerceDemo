@@ -6,6 +6,8 @@ import com.example.demo.models.Cart;
 import com.example.demo.models.CartItem;
 import com.example.demo.models.Product;
 import com.example.demo.repositories.CartItemRepository;
+import com.example.demo.repositories.CartRepository;
+import com.example.demo.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +18,17 @@ import java.util.stream.Collectors;
 public class CartItemService {
 
     private final CartItemRepository cartItemRepository;
-    private final CartService cartService;
-    private final ProductService productService;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
 
-    public CartItemService(CartItemRepository cartItemRepository, CartService cartService, ProductService productService) {
+    public CartItemService(CartItemRepository cartItemRepository, CartRepository cartRepository, ProductRepository productRepository) {
         this.cartItemRepository = cartItemRepository;
-        this.cartService = cartService;
-        this.productService = productService;
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
     }
 
     public List<GetCartItemsDto> getCartItems(Long cartId) {
-        Cart cart = cartService.getCartById(cartId).
+        Cart cart = cartRepository.findById(cartId).
                 orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
         return cart.getItems().stream()
@@ -47,10 +49,11 @@ public class CartItemService {
     }
 
     public void addCartItemToCart(CreateCartItemDto createCartItemDto) {
-        Cart cart = cartService.getCartById(createCartItemDto.getCartId()).
+        Cart cart = cartRepository.findById(createCartItemDto.getCartId()).
                 orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
-        Product product = productService.getProductById(createCartItemDto.getProductId());
+        Product product = productRepository.findById(createCartItemDto.getProductId()).
+                orElseThrow(() -> new EntityNotFoundException("product not found"));
 
         CartItem cartItem = new CartItem();
         cartItem.setCart(cart);

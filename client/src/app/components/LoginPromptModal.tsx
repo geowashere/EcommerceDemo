@@ -25,6 +25,7 @@ const LoginPromptModal = ({
       aria-labelledby="login-prompt-title"
       maxWidth="xs"
       fullWidth
+      closeAfterTransition={false}
     >
       <DialogTitle id="login-prompt-title" sx={{ textAlign: "center", pt: 3 }}>
         Login Required

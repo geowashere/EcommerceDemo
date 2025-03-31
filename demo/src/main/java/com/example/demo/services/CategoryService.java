@@ -3,10 +3,10 @@ package com.example.demo.services;
 import com.example.demo.dto.CategoryPositionDto;
 import com.example.demo.dto.CreateCategoryDto;
 import com.example.demo.dto.UpdateCategoryDto;
-import com.example.demo.dto.UpdateProductDto;
+import com.example.demo.exceptions.CategoryIsNotEmptyException;
 import com.example.demo.models.Category;
-import com.example.demo.models.Product;
 import com.example.demo.repositories.CategoryRepository;
+import com.example.demo.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,21 +18,23 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productsRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productsRepository) {
         this.categoryRepository = categoryRepository;
+        this.productsRepository = productsRepository;
     }
 
     public List<Category> getCategories() {
         return categoryRepository.findAllByOrderByPositionAsc();
     }
 
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
-    }
-
     public void deleteCategoryById(Long id) {
+
+        boolean hasProducts = productsRepository.existsByCategoryId(id);
+        if (hasProducts) {
+            throw new CategoryIsNotEmptyException();
+        }
         categoryRepository.deleteById(id);
     }
 

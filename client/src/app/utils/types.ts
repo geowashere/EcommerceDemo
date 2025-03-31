@@ -66,3 +66,11 @@ export interface CreateCartItemType {
   productId: number;
   quantity: number;
 }
+
+export interface LoginResponse {
+  token: string;
+  role: string;
+  firstName: string;
+  lastName: string;
+  userId: number;
+}

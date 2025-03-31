@@ -4,6 +4,8 @@ import com.example.demo.dto.AuthResponseDto;
 import com.example.demo.dto.LoginDto;
 import com.example.demo.dto.RegisterDto;
 import com.example.demo.dto.RegisterResponseDto;
+import com.example.demo.exceptions.EmailAlreadyExistsException;
+import com.example.demo.exceptions.InvalidCredentialsException;
 import com.example.demo.models.Role;
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
@@ -27,7 +29,7 @@ public class AuthService {
     public RegisterResponseDto register(RegisterDto request) {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
-            throw new RuntimeException("Email is already taken");
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
         System.out.println("request: " + request);
@@ -49,14 +51,19 @@ public class AuthService {
 
     public AuthResponseDto login(LoginDto request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(InvalidCredentialsException::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException();
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponseDto(user.getId(), user.getFirstName(), user.getLastName(), token, user.getRole());
+        return new AuthResponseDto(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    token, user.getRole(),
+            "Login Successful");
     }
 
     public Optional<User> getUserById(Long id) {

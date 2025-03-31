@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Tooltip,
   Typography,
+  Alert,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import {
@@ -35,15 +36,8 @@ const AdminPage = () => {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const [newCategoryName, setNewCategoryName] = useState<string>("");
-  const [newCategoryDescription, setNewCategoryDescription] =
-    useState<string>("");
-
-  const [newProductName, setNewProductName] = useState<string>("");
-  const [newProductDescription, setNewProductDescription] =
-    useState<string>("");
-  const [newProductPrice, setNewProductPrice] = useState<number>(0);
+  const [catError, setCatError] = useState<string | null>(null);
+  const [prodError, setProdError] = useState<string | null>(null);
 
   // Modals - Modals Info
   const [isCreateCategoryModalOpen, setIsCreateCategoryModalOpen] =
@@ -132,12 +126,22 @@ const AdminPage = () => {
   }, [products]);
 
   const handleDeleteCategory = async (id: number) => {
-    await deleteCategoryAsync(id);
+    try {
+      setCatError(null);
+      await deleteCategoryAsync(id);
+    } catch (err: any) {
+      setCatError(err?.response?.data?.message);
+    }
     console.log("Cat deleted");
   };
 
   const handleDeleteProduct = async (id: number) => {
-    await deleteProductAsync(id);
+    try {
+      setProdError(null);
+      await deleteProductAsync(id);
+    } catch (err: any) {
+      setProdError(err?.response?.data?.message);
+    }
     console.log("prod deleted");
   };
 
@@ -162,6 +166,11 @@ const AdminPage = () => {
               <Typography variant="h5" className="font-semibold text-gray-700">
                 Categories
               </Typography>
+              {catError && (
+                <Alert severity="error" className="mb-4">
+                  {catError}
+                </Alert>
+              )}
               <Chip
                 label="All"
                 color={selectedCategory === null ? "primary" : "default"}
@@ -178,7 +187,7 @@ const AdminPage = () => {
             </Tooltip>
           </div>
 
-          <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex flex-col gap-4 mb-4">
             {categories
               .filter((category) => category.name !== "All")
               .map((category, index) => (
@@ -212,7 +221,11 @@ const AdminPage = () => {
               </IconButton>
             </Tooltip>
           </div>
-
+          {prodError && (
+            <Alert severity="error" className="mb-4">
+              {prodError}
+            </Alert>
+          )}
           <div className="flex flex-col gap-6">
             {products.map((product, index) => (
               <ProductCardAdmin

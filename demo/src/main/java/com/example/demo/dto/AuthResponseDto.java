@@ -9,13 +9,15 @@ public class AuthResponseDto {
     private String lastName;
     private String token;
     private Role role;
+    private String message;
 
-    public AuthResponseDto(Long userId, String firstName, String lastName, String token, Role role) {
+    public AuthResponseDto(Long userId, String firstName, String lastName, String token, Role role, String message) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.token = token;
         this.role = role;
+        this.message = message;
     }
 
     public Long getUserId() {
@@ -56,5 +58,13 @@ public class AuthResponseDto {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

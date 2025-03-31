@@ -10,7 +10,7 @@ export default function RouteHandler({
 }: {
   children: React.ReactNode;
 }) {
-  const { token, isInitialized } = useAuth();
+  const { token, isInitialized, role } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -34,6 +34,15 @@ export default function RouteHandler({
 
     // // Redirect unauthenticated users from protected routes
     if (isPrivate && !token) {
+      router.push("/");
+      return;
+    }
+
+    if (
+      pathname.toLowerCase().startsWith("/admin") &&
+      token &&
+      role !== "ADMIN"
+    ) {
       router.push("/");
       return;
     }

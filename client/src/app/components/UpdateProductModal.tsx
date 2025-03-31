@@ -69,7 +69,13 @@ const UpdateProductModal: React.FC<UpdateProductModalProps> = ({
 
   if (name && description) {
     return (
-      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="sm"
+        fullWidth
+        closeAfterTransition={false}
+      >
         <DialogTitle className="bg-gray-50 p-6">
           <p className="text-xl font-semibold text-gray-800">
             Update Product Details

@@ -1,17 +1,12 @@
+import { LoginResponse } from "../utils/types";
 import { axiosInstance } from "./axiosConfig";
 export const loginUser = async (email: string, password: string) => {
-  try {
-    const response = await axiosInstance.post("/login", {
-      email,
-      password,
-    });
-
-    console.log("login response: ", response);
-
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.post<LoginResponse>("/login", {
+    email,
+    password,
+  });
+  console.log("login response: ", response);
+  return response.data;
 };
 
 export const registerUser = async (
@@ -20,18 +15,12 @@ export const registerUser = async (
   email: string,
   password: string
 ) => {
-  try {
-    const response = await axiosInstance.post("/register", {
-      firstName,
-      lastName,
-      email,
-      password,
-    });
-
-    console.log("register response: ", response);
-
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.post("/register", {
+    firstName,
+    lastName,
+    email,
+    password,
+  });
+  console.log("register response: ", response);
+  return response.data;
 };
