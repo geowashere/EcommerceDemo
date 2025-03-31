@@ -51,3 +51,18 @@ export interface DragItem {
   id: string;
   type: string;
 }
+
+export interface CartItemType {
+  id: number;
+  productCategory: string;
+  productDescription: string;
+  productName: string;
+  productPrice: number;
+  quantity: number;
+}
+
+export interface CreateCartItemType {
+  cartId: number;
+  productId: number;
+  quantity: number;
+}

@@ -56,6 +56,10 @@ public class AuthService {
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponseDto(user.getFirstName(), user.getLastName(), token, user.getRole());
+        return new AuthResponseDto(user.getId(), user.getFirstName(), user.getLastName(), token, user.getRole());
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 }

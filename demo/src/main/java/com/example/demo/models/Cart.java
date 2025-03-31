@@ -12,6 +12,7 @@ public class Cart {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     @OneToMany(mappedBy = "cart")

@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "./context/authContext";
-import { publicRoutes } from "./utils/routes";
+import { privateRoutes, publicRoutes } from "./utils/routes";
 
 export default function RouteHandler({
   children,
@@ -22,17 +22,21 @@ export default function RouteHandler({
       pathname.toLowerCase().startsWith(route.toLowerCase())
     );
 
+    const isPrivate = privateRoutes.some((route) =>
+      pathname.toLowerCase().startsWith(route.toLowerCase())
+    );
+
     // Redirect authenticated users from public routes
     if (isPublic && token) {
       router.push("/");
       return;
     }
 
-    // // // Redirect unauthenticated users from protected routes
-    // // if (!isPublic && !token) {
-    // //   router.push("/login");
-    // //   return;
-    // // }
+    // // Redirect unauthenticated users from protected routes
+    if (isPrivate && !token) {
+      router.push("/");
+      return;
+    }
 
     setIsAuthorized(true);
   }, [token, isInitialized, pathname, router]);

@@ -2,9 +2,10 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { IconButton } from "@mui/material";
 import Link from "next/link";
 import { useAuth } from "../context/authContext";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function Navbar() {
-  const { role } = useAuth();
+  const { role, token, firstName, lastName } = useAuth();
 
   console.log("ROle: ", role);
 
@@ -18,11 +19,15 @@ export default function Navbar() {
             Products
           </Link>
         </li>
-        <li>
-          <IconButton sx={{ color: "white", marginTop: -0.9 }}>
-            <AddShoppingCartIcon />
-          </IconButton>
-        </li>
+        {token && (
+          <li>
+            <Link href={"/cart"}>
+              <IconButton sx={{ color: "white", marginTop: -0.9 }}>
+                <AddShoppingCartIcon />
+              </IconButton>
+            </Link>
+          </li>
+        )}
         {role === "ADMIN" && (
           <li>
             <Link href="/admin" className="hover:underline">
@@ -30,6 +35,14 @@ export default function Navbar() {
             </Link>
           </li>
         )}
+        <li className="flex">
+          <IconButton sx={{ color: "white", marginTop: -0.9 }}>
+            <AccountCircleIcon />
+          </IconButton>
+          <p>
+            {firstName} {lastName}
+          </p>
+        </li>
       </ul>
     </div>
   );
