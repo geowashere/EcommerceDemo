@@ -12,13 +12,17 @@ import {
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import {
+  createCategoryAsync,
   deleteCategoryAsync,
   getCategoriesAsync,
+  updateCategoryByIdAsync,
   updateCategoryOrderAsync,
 } from "../api/categoryService";
 import {
+  createProductAsync,
   deleteProductAsync,
   getAllProductsAsync,
+  updateProductAsync,
   updateProductOrderAsync,
 } from "../api/productService";
 import CategoryCardAdmin from "../components/CategoryCardAdmin";
@@ -52,24 +56,23 @@ const AdminPage = () => {
   const [productToUpdate, setProductToUpdate] = useState<ProductType>();
   const [cateogryToUpdate, setCateogryToUpdate] = useState<CategoryType>();
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [categoriesData, productsData] = await Promise.all([
+        getCategoriesAsync(),
+        getAllProductsAsync(),
+      ]);
+
+      setCategories(categoriesData);
+      setProducts(productsData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [categoriesData, productsData] = await Promise.all([
-          getCategoriesAsync(),
-          getAllProductsAsync(),
-        ]);
-
-        setCategories(categoriesData);
-        setProducts(productsData);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -129,8 +132,12 @@ const AdminPage = () => {
     try {
       setCatError(null);
       await deleteCategoryAsync(id);
+      await fetchData();
     } catch (err: any) {
       setCatError(err?.response?.data?.message);
+      setTimeout(() => {
+        setCatError(null);
+      }, 2500);
     }
     console.log("Cat deleted");
   };
@@ -139,8 +146,12 @@ const AdminPage = () => {
     try {
       setProdError(null);
       await deleteProductAsync(id);
+      await fetchData();
     } catch (err: any) {
-      setProdError(err?.response?.data?.message);
+      setProdError(err?.response?.data?.message || "ERROR");
+      setTimeout(() => {
+        setProdError(null);
+      }, 2500);
     }
     console.log("prod deleted");
   };
@@ -155,131 +166,148 @@ const AdminPage = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="container mx-auto px-4 py-8">
-        <Typography variant="h4" className="mb-6 font-bold text-gray-800">
-          Admin Dashboard
-        </Typography>
+      <div className="relative">
+        <div className="container mx-auto px-4 py-8">
+          <Typography variant="h4" className="mb-6 font-bold text-gray-800">
+            Admin Dashboard
+          </Typography>
 
-        <section className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-5">
-              <Typography variant="h5" className="font-semibold text-gray-700">
-                Categories
-              </Typography>
-              {catError && (
-                <Alert severity="error" className="mb-4">
-                  {catError}
-                </Alert>
-              )}
-              <Chip
-                label="All"
-                color={selectedCategory === null ? "primary" : "default"}
-                className="cursor-pointer hover:shadow-md transition-shadow h-full"
-              />
+          <section className="mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex gap-5">
+                <Typography
+                  variant="h5"
+                  className="font-semibold text-gray-700"
+                >
+                  Categories
+                </Typography>
+
+                <Chip
+                  label="All"
+                  color={selectedCategory === null ? "primary" : "default"}
+                  className="cursor-pointer hover:shadow-md transition-shadow h-full"
+                />
+              </div>
+              <Tooltip title="Add Category">
+                <IconButton
+                  onClick={() => setIsCreateCategoryModalOpen(true)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
             </div>
-            <Tooltip title="Add Category">
-              <IconButton
-                onClick={() => setIsCreateCategoryModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-          </div>
 
-          <div className="flex flex-col gap-4 mb-4">
-            {categories
-              .filter((category) => category.name !== "All")
-              .map((category, index) => (
-                <CategoryCardAdmin
-                  key={category.id}
-                  category={category}
+            <div className="flex flex-col gap-4 mb-4">
+              {categories
+                .filter((category) => category.name !== "All")
+                .map((category, index) => (
+                  <CategoryCardAdmin
+                    key={category.id}
+                    category={category}
+                    index={index}
+                    onEdit={() => {
+                      setIsUpdateCategoryModalOpen(true);
+                      setCateogryToUpdate(category);
+                    }}
+                    isSelected={selectedCategory === category.id}
+                    onDelete={() => handleDeleteCategory(category.id)}
+                    moveCategory={moveCategory}
+                    onDrop={handleDropCategory}
+                  />
+                ))}
+            </div>
+          </section>
+          <section>
+            <div className="flex justify-between items-center mb-4">
+              <Typography variant="h5" className="font-semibold text-gray-700">
+                Products
+              </Typography>
+              <Tooltip title="Add Product">
+                <IconButton
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  onClick={() => setIsCreateProductModalOpen(true)}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              {products.map((product, index) => (
+                <ProductCardAdmin
+                  key={product.id}
                   index={index}
+                  product={product}
                   onEdit={() => {
-                    setIsUpdateCategoryModalOpen(true);
-                    setCateogryToUpdate(category);
+                    setIsUpdateProductModalOpen(true);
+                    setProductToUpdate(product);
                   }}
-                  isSelected={selectedCategory === category.id}
-                  onDelete={() => handleDeleteCategory(category.id)}
-                  moveCategory={moveCategory}
-                  onDrop={handleDropCategory}
+                  onDelete={() => handleDeleteProduct(product.id)}
+                  moveProduct={moveProduct}
+                  onDrop={handleDropProduct}
                 />
               ))}
-          </div>
-        </section>
-        <section>
-          <div className="flex justify-between items-center mb-4">
-            <Typography variant="h5" className="font-semibold text-gray-700">
-              Products
-            </Typography>
-            <Tooltip title="Add Product">
-              <IconButton
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-                onClick={() => setIsCreateProductModalOpen(true)}
-              >
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-          </div>
+            </div>
+          </section>
+        </div>
+        {isCreateCategoryModalOpen && (
+          <CreateCategoryModal
+            open={isCreateCategoryModalOpen}
+            onClose={() => setIsCreateCategoryModalOpen(false)}
+            onSubmit={async (categoryData) => {
+              await createCategoryAsync(categoryData);
+              await fetchData();
+            }}
+          />
+        )}
+        {isCreateProductModalOpen && (
+          <CreateProductModal
+            open={isCreateProductModalOpen}
+            onClose={() => setIsCreateProductModalOpen(false)}
+            onSubmit={async (productData) => {
+              await createProductAsync(productData);
+              await fetchData();
+            }}
+            categories={categories}
+          />
+        )}
+        {isUpdateCategoryModalOpen && (
+          <UpdateCategoryModal
+            open={isUpdateCategoryModalOpen}
+            onClose={() => setIsUpdateCategoryModalOpen(false)}
+            onSubmit={async (categoryData) => {
+              await updateCategoryByIdAsync(categoryData);
+              await fetchData();
+            }}
+            category={cateogryToUpdate}
+          />
+        )}
+        {isUpdateProductModalOpen && (
+          <UpdateProductModal
+            open={isUpdateProductModalOpen}
+            onClose={() => setIsUpdateProductModalOpen(false)}
+            onSubmit={async (productData) => {
+              await updateProductAsync(productData);
+              await fetchData();
+            }}
+            categories={categories}
+            product={productToUpdate}
+          />
+        )}
+        <div className="fixed top-0 left-0 right-0 items-center justify-center z-50 w-full p-4">
           {prodError && (
             <Alert severity="error" className="mb-4">
               {prodError}
             </Alert>
           )}
-          <div className="flex flex-col gap-6">
-            {products.map((product, index) => (
-              <ProductCardAdmin
-                key={product.id}
-                index={index}
-                product={product}
-                onEdit={() => {
-                  setIsUpdateProductModalOpen(true);
-                  setProductToUpdate(product);
-                }}
-                onDelete={() => handleDeleteProduct(product.id)}
-                moveProduct={moveProduct}
-                onDrop={handleDropProduct}
-              />
-            ))}
-          </div>
-        </section>
+          {catError && (
+            <Alert severity="error" className="mb-4">
+              {catError}
+            </Alert>
+          )}
+        </div>
       </div>
-      <CreateCategoryModal
-        open={isCreateCategoryModalOpen}
-        onClose={() => setIsCreateCategoryModalOpen(false)}
-        onSubmit={() => {
-          console.log("category created");
-        }}
-      />
-      <CreateProductModal
-        open={isCreateProductModalOpen}
-        onClose={() => setIsCreateProductModalOpen(false)}
-        onSubmit={() => {
-          console.log("product created");
-        }}
-        categories={categories}
-      />
-      {isUpdateCategoryModalOpen && (
-        <UpdateCategoryModal
-          open={isUpdateCategoryModalOpen}
-          onClose={() => setIsUpdateCategoryModalOpen(false)}
-          onSubmit={() => {
-            console.log("product updated");
-          }}
-          category={cateogryToUpdate}
-        />
-      )}
-      {isUpdateProductModalOpen && (
-        <UpdateProductModal
-          open={isUpdateProductModalOpen}
-          onClose={() => setIsUpdateProductModalOpen(false)}
-          onSubmit={() => {
-            console.log("product updated");
-          }}
-          categories={categories}
-          product={productToUpdate}
-        />
-      )}
     </DndProvider>
   );
 };

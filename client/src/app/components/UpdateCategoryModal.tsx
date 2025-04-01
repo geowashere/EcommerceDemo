@@ -7,13 +7,12 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { updateCategoryByIdAsync } from "../api/categoryService";
-import { CategoryType } from "../utils/types";
+import { CategoryType, UpdateCategoryType } from "../utils/types";
 
 interface UpdateCategoryModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (categoryData: UpdateCategoryType) => Promise<void>;
   category?: CategoryType;
 }
 
@@ -25,16 +24,22 @@ const UpdateCategoryModal: React.FC<UpdateCategoryModalProps> = ({
 }) => {
   const [name, setName] = useState(category?.name);
   const [description, setDescription] = useState(category?.description);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (name) if (!name.trim()) return;
-
-    if (category && name && description)
-      updateCategoryByIdAsync({ id: category?.id, name, description });
-
+    setIsSubmitting(true);
+    if (category && name && description) {
+      try {
+        await onSubmit({ id: category?.id, name, description });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
     setName("");
     setDescription("");
-    onSubmit();
     onClose();
   };
 
@@ -42,7 +47,7 @@ const UpdateCategoryModal: React.FC<UpdateCategoryModalProps> = ({
     return (
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={isSubmitting ? undefined : onClose}
         maxWidth="sm"
         fullWidth
         closeAfterTransition={false}

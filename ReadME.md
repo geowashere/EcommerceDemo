@@ -53,7 +53,9 @@ npm install
 
 3. Ensure that all information in `application.properties` is correct. The `spring.datasource.username` and `spring.datasource.password` should match a PostgreSQL user with the necessary permissions for a database named `EcommerceDemo`.
 
-4. Seed data in the Products & Categories tables:
+4. Ensure that the jdk version matches the one in `build.gradle` `languageVersion = JavaLanguageVersion.of(your_jdk_version)`.
+
+5. Seed data in the Products & Categories tables:
 
 - Insert in Categories first:
 
@@ -87,14 +89,14 @@ INSERT INTO products (name, price, description, position, category_id) VALUES
 ('Basketball', 24.99, 'Official size', 15, 5);
 ```
 
-5. **Start the server:** Open `DemoApplication.java` in IntelliJ and run the application.
-6. **Start the client:** Navigate to the client folder and run:
+6. **Start the server:** Open `DemoApplication.java` in IntelliJ and run the application.
+7. **Start the client:** Navigate to the client folder and run:
 
 ```
 npm run dev
 ```
 
-7. When the server starts, an admin user is automatically created with the following credentials:
+8. When the server starts, an admin user is automatically created with the following credentials:
 
 ```
 admin@example.com

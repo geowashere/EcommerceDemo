@@ -10,13 +10,13 @@ import {
   InputAdornment,
   Select,
 } from "@mui/material";
-import { CategoryType, ProductType } from "../utils/types";
+import { CategoryType, ProductType, UpdateProductType } from "../utils/types";
 import { updateProductAsync } from "../api/productService";
 
 interface UpdateProductModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (productData: UpdateProductType) => Promise<void>;
   categories: CategoryType[];
   product?: ProductType;
 }
@@ -34,10 +34,11 @@ const UpdateProductModal: React.FC<UpdateProductModalProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     product?.categoryId || null
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   console.log("product: ", product);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (name)
       if (!name.trim() || price === "" || selectedCategory === 0) return;
 
@@ -47,16 +48,22 @@ const UpdateProductModal: React.FC<UpdateProductModalProps> = ({
     console.log("price: ", price);
     console.log("selectedCategory: ", selectedCategory);
 
-    const categoryId = Number(selectedCategory);
-
-    if (product && name && description && price && selectedCategory)
-      updateProductAsync({
-        id: product.id,
-        name,
-        description,
-        price,
-        categoryId: selectedCategory,
-      });
+    setIsSubmitting(true);
+    if (product && name && description && price && selectedCategory) {
+      try {
+        await onSubmit({
+          id: product.id,
+          name,
+          description,
+          price,
+          categoryId: selectedCategory,
+        });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
 
     setName("");
     setDescription("");
@@ -64,14 +71,13 @@ const UpdateProductModal: React.FC<UpdateProductModalProps> = ({
     setSelectedCategory(null);
 
     onClose();
-    onSubmit();
   };
 
   if (name && description) {
     return (
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={isSubmitting ? undefined : onClose}
         maxWidth="sm"
         fullWidth
         closeAfterTransition={false}

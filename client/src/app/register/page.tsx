@@ -38,6 +38,9 @@ export default function RegisterPage() {
     } catch (err: any) {
       console.log("err: ", err);
       setError(err?.response?.data?.message);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   };
 

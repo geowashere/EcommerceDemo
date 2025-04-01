@@ -7,12 +7,12 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { createCategoryAsync } from "../api/categoryService";
+import { CreateCategoryType } from "../utils/types";
 
 interface CreateCategoryModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (categoryData: CreateCategoryType) => Promise<void>;
 }
 
 const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
@@ -22,22 +22,30 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
 }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim()) return;
 
-    createCategoryAsync({ name, description });
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit({ name, description });
+    } catch (err) {
+      console.error("err: ", err);
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setName("");
     setDescription("");
-    onSubmit();
     onClose();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={isSubmitting ? undefined : close}
       maxWidth="sm"
       fullWidth
       closeAfterTransition={false}

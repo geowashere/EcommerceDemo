@@ -29,6 +29,9 @@ export default function LoginPage() {
       router.push("/home");
     } catch (err: any) {
       setError(err?.response?.data?.message);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   };
 

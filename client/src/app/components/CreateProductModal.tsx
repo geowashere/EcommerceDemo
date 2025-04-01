@@ -10,13 +10,13 @@ import {
   InputAdornment,
   Select,
 } from "@mui/material";
-import { CategoryType } from "../utils/types";
+import { CategoryType, CreateProductType } from "../utils/types";
 import { createProductAsync } from "../api/productService";
 
 interface CreateProductModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (productData: CreateProductType) => Promise<void>;
   categories: CategoryType[];
 }
 
@@ -30,10 +30,12 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | "">("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim() || price === "" || selectedCategory === "") return;
 
+    setIsSubmitting(true);
     console.log("submitting new product: ");
     console.log("name: ", name);
     console.log("description: ", description);
@@ -41,26 +43,25 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
     console.log("selectedCategory: ", selectedCategory);
 
     const categoryId = Number(selectedCategory);
-
-    createProductAsync({
-      name,
-      description,
-      price,
-      categoryId,
-    });
+    try {
+      await onSubmit({ name, description, price, categoryId });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setName("");
     setDescription("");
     setPrice("");
     setSelectedCategory("");
-    onSubmit();
     onClose();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={isSubmitting ? undefined : onClose}
       maxWidth="sm"
       fullWidth
       closeAfterTransition={false}
